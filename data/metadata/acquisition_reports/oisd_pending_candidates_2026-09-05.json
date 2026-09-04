@@ -1,0 +1,29 @@
+{
+  "report_type": "ACQUISITION_CANDIDATE_QUALITY_REPORT",
+  "generated_at": "2026-09-05T00:00:00+00:00",
+  "status": "PENDING_AUTHORIZATION",
+  "sources": [
+    {
+      "source_id": "SRC-OISD-PENDING-DETAIL-001",
+      "raw_file": "data/raw/pending_authorization/oisd_detailed_14_candidate.json",
+      "raw_file_sha256": "5d04e8de761cd0b0080976dca7639eacd73cf4b27d7ed8cd4a0699f35c1b0979",
+      "records_received": 14
+    },
+    {
+      "source_id": "SRC-OISD-PENDING-INDEX-001",
+      "raw_file": "data/raw/pending_authorization/oisd_index_100_candidate.json",
+      "raw_file_sha256": "7c0b9618f3c3580b8a020edac791be4d66faacd2af2388005801acaf954476ad",
+      "records_received": 100,
+      "excluded_mirror": "OISD_100_Real_Public_Reports_Backend_Ready.csv"
+    }
+  ],
+  "records_received": 114,
+  "records_accepted_for_annotation": 0,
+  "records_eligible_for_release": 0,
+  "missing_text": 0,
+  "pii_flags": 0,
+  "label_leakage_flags": 0,
+  "exact_duplicates_detected": 2,
+  "near_duplicates_detected": 0,
+  "exclusion_reason": "Both sources are PENDING_LEGAL. Their source-provided labels are candidate metadata, not adjudicated SIFT ground truth."
+}

@@ -1,13 +1,13 @@
 {
   "registry_version": "1.0",
   "updated_at": "2026-08-30T16:21:19.524662+00:00",
-  "total_sources": 1,
+  "total_sources": 3,
   "sources": [
     {
       "source_id": "SRC-SIM-01",
       "source_name": "Simulated Upper Assam Operations",
-      "source_type": "INTERNAL_SAFETY_REPORTS",
-      "classification": "REAL",
+      "source_type": "SYNTHETIC_BENCHMARK",
+      "classification": "SYNTHETIC",
       "license": "PROPRIETARY_OIL_INTERNAL",
       "permission_status": "AUTHORIZED",
       "collection_date": null,
@@ -18,7 +18,48 @@
       "raw_file_sha256": null,
       "ingested_at": "2026-08-30T16:21:19.524331+00:00",
       "status": "ACTIVE",
+      "is_demo": true,
       "notes": null
+    },
+    {
+      "source_id": "SRC-OISD-PENDING-DETAIL-001",
+      "source_name": "OISD Safety Alert detailed candidate records",
+      "source_type": "PUBLIC_LICENSED_SAFETY_DATASET",
+      "classification": "REAL",
+      "license": "PENDING_AUTHORIZATION",
+      "permission_status": "PENDING_LEGAL",
+      "collection_date": "2026-09-05",
+      "data_owner": "Oil Industry Safety Directorate (OISD)",
+      "allowed_use": "Pending formal license and usage authorization review",
+      "pii_status": "NOT_YET_SCANNED",
+      "record_count": 14,
+      "raw_file_sha256": "5d04e8de761cd0b0080976dca7639eacd73cf4b27d7ed8cd4a0699f35c1b0979",
+      "ingested_at": "2026-09-05T00:00:00+00:00",
+      "status": "ACTIVE",
+      "acquisition_method": "Manual workspace transfer of a user-supplied candidate file",
+      "source_version": "SIF_Backend_Ready_Clean_Real_Industry_v2.json",
+      "is_demo": false,
+      "notes": "Pending authorization. Source-provided labels remain candidate metadata and must not be treated as SIFT ground truth."
+    },
+    {
+      "source_id": "SRC-OISD-PENDING-INDEX-001",
+      "source_name": "OISD Safety Alert index candidate records",
+      "source_type": "PUBLIC_LICENSED_SAFETY_DATASET",
+      "classification": "REAL",
+      "license": "PENDING_AUTHORIZATION",
+      "permission_status": "PENDING_LEGAL",
+      "collection_date": "2026-09-05",
+      "data_owner": "Oil Industry Safety Directorate (OISD)",
+      "allowed_use": "Pending formal license and usage authorization review",
+      "pii_status": "NOT_YET_SCANNED",
+      "record_count": 100,
+      "raw_file_sha256": "7c0b9618f3c3580b8a020edac791be4d66faacd2af2388005801acaf954476ad",
+      "ingested_at": "2026-09-05T00:00:00+00:00",
+      "status": "ACTIVE",
+      "acquisition_method": "Manual workspace transfer of a user-supplied candidate file; CSV mirror excluded from counts",
+      "source_version": "OISD_100_Real_Public_Reports_Backend_Ready.json",
+      "is_demo": false,
+      "notes": "Pending authorization. JSON and CSV source files represent the same 100 candidates; source-provided labels remain candidate metadata and must not be treated as SIFT ground truth."
     }
   ]
 }

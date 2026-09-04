@@ -51,6 +51,7 @@ It eliminates ambiguity by formalizing:
 | :--- | :--- | :--- |
 | [**DATA_PIPELINE.md**](pipelines/DATA_PIPELINE.md) | **Data Pipeline Specification** | Ingestion, sanitization, governance, deduplication, and split generation architecture. |
 | [**REAL_DATA_WORKFLOW.md**](pipelines/REAL_DATA_WORKFLOW.md) | **Operational Annotation Workflow** | End-to-end lifecycle for double-blind human annotation, adjudication, and dataset release gates. |
+| [**RELEASE_GOVERNANCE.md**](RELEASE_GOVERNANCE.md) | **Real-release governance** | Authoritative real-source eligibility and hard release gates. |
 
 ### 2.5 Experiments & Benchmarks (`docs/experiments/`)
 | Document | Purpose | Key Contents |

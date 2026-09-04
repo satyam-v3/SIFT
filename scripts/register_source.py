@@ -48,6 +48,11 @@ def run_register(args):
         allowed_use=args.allowed_use,
         record_count=rec_count,
         raw_file_sha256=sha256,
+        authorization_reference=args.authorization_reference,
+        acquisition_method=args.acquisition_method,
+        source_version=args.source_version,
+        sensitivity_classification=args.sensitivity_classification,
+        is_demo=args.demo,
         notes=args.notes,
     )
 
@@ -95,6 +100,11 @@ def main():
     p_reg.add_argument("--raw-file", help="Path to raw source file to hash")
     p_reg.add_argument("--records", type=int, default=0, help="Initial record count")
     p_reg.add_argument("--notes", help="Optional provenance notes")
+    p_reg.add_argument("--authorization-reference", help="Non-secret approval/reference identifier")
+    p_reg.add_argument("--acquisition-method", help="How the source was acquired")
+    p_reg.add_argument("--source-version", help="Source-system schema/version")
+    p_reg.add_argument("--sensitivity-classification", help="Data sensitivity classification")
+    p_reg.add_argument("--demo", action="store_true", help="Mark a DEMO or SYNTHETIC source; it cannot support real release")
 
     # List
     subparsers.add_parser("list", help="List all registered data sources")

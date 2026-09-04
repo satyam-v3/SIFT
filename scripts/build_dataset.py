@@ -32,6 +32,7 @@ from data_pipeline.manifest import (
     DatasetMetadata,
     QualityReport,
 )
+from data_pipeline.release_gate import ReleaseGateAuditor
 
 
 def run_pipeline(
@@ -46,8 +47,12 @@ def run_pipeline(
     dry_run: bool = False,
     redact_pii: bool = False,
     is_demo: bool = False,
+    source_id: str | None = None,
 ):
     print("=" * 65)
+
+    if not dry_run and not is_demo and not source_id:
+        raise ValueError("A non-demo dataset build requires a registered --source-id and release-gate audit.")
     print(f" SIFT DATASET ENGINEERING PIPELINE - BUILD v{version}")
     print(f" Mode: {'DRY RUN' if dry_run else 'RELEASE BUILD'} | Dataset ID: {dataset_id}")
     print("=" * 65)
@@ -65,6 +70,9 @@ def run_pipeline(
         if not rec.is_eligible:
             continue
         data = rec.raw_data
+        if source_id:
+            # Preserve the authoritative source reference with each canonical record.
+            data["source_id"] = source_id
         if "raw_text" in data:
             data["raw_text"] = normalize_text(data["raw_text"])
         normalized_records.append(data)
@@ -142,6 +150,25 @@ def run_pipeline(
     if not split_res.leakage_passed:
         print("\n[x] Build Aborted: Split leakage detected across partition boundaries.")
         sys.exit(1)
+
+    # Non-demo output is a release path and must pass the same authoritative
+    # governance gates as scripts/release_dataset.py before any artifacts exist.
+    if not dry_run and not is_demo:
+        release_report = ReleaseGateAuditor().audit_dataset_release(
+            dataset_id=dataset_id,
+            version=version,
+            validated_records=clean_records,
+            train_records=split_res.train_records,
+            val_records=split_res.val_records,
+            test_records=split_res.test_records,
+            source_id=source_id,
+            locked_test_set=True,
+        )
+        if not release_report.is_release_approved:
+            raise ValueError(
+                "Real dataset build blocked by release gates: " +
+                "; ".join(f"{g.gate_name}: {g.details}" for g in release_report.gate_checks if not g.passed)
+            )
 
     # 7. Distribution Metrics & Manifest Generation
     print("\n[7/7] Computing dataset distributions, checksums, and quality reports...")
@@ -245,6 +272,7 @@ def run_pipeline(
         file_paths=[validated_file, train_file, val_file, test_file],
         base_dir=output_dir,
         record_counts=counts,
+        is_demo=is_demo,
     )
 
     with open(manifest_file, "w", encoding="utf-8") as f:
@@ -288,6 +316,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Perform validation and quality audits without writing split files")
     parser.add_argument("--redact-pii", action="store_true", help="Apply redaction masks to detected PII in narrative")
     parser.add_argument("--demo", action="store_true", help="Mark dataset as demo/synthetic")
+    parser.add_argument("--source-id", help="Registered real source ID; required for non-demo builds")
 
     args = parser.parse_args()
 
@@ -305,6 +334,7 @@ def main():
         dry_run=args.dry_run,
         redact_pii=args.redact_pii,
         is_demo=args.demo,
+        source_id=args.source_id,
     )
 
 

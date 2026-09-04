@@ -17,6 +17,8 @@ import { Actions } from './pages/Actions';
 import { Facilities } from './pages/Facilities';
 import { FacilityDetails } from './pages/FacilityDetails';
 import { Settings } from './pages/Settings';
+import { AnnotationWorkbench } from './pages/AnnotationWorkbench';
+import { AnnotationAdjudication } from './pages/AnnotationAdjudication';
 
 export function App() {
   return (
@@ -42,6 +44,8 @@ export function App() {
               <Route path="/facilities" element={<Facilities />} />
               <Route path="/facilities/:id" element={<FacilityDetails />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/annotations" element={<AnnotationWorkbench />} />
+              <Route path="/annotations/adjudication" element={<AnnotationAdjudication />} />
             </Route>
 
             {/* Catch-all fallback */}

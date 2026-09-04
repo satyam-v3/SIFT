@@ -13,6 +13,7 @@ import {
   LogOut,
   Shield,
   UserCheck,
+  ClipboardCheck,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useReportsContext } from '../../context/ReportsContext';
@@ -51,6 +52,7 @@ export function Sidebar({ isOpen, onClose }) {
     {
       label: 'Operations',
       items: [
+        { name: 'Annotation Workbench', path: '/annotations', icon: ClipboardCheck },
         { name: 'Actions', path: '/actions', icon: ListTodo, count: openActionsCount },
         { name: 'Facilities', path: '/facilities', icon: Building2 },
       ],

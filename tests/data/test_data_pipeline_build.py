@@ -41,7 +41,7 @@ def test_build_dataset_full_release():
             output_dir=temp_dir,
             dataset_id="sift_test_dataset",
             dry_run=False,
-            is_demo=False,
+            is_demo=True,
         )
         
         # 1. Verify split files exist

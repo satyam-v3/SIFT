@@ -31,6 +31,9 @@ class DatasetManifest(BaseModel):
     annotation_protocol_version: str = "1.0"
     schema_version: str = "1.0"
     created_at: str
+    data_classification: str = "REAL"
+    is_demo: bool = False
+    release_status: str = "RELEASED"
     files: List[FileManifestEntry] = Field(default_factory=list)
 
 
@@ -89,6 +92,7 @@ class DatasetManifestGenerator:
         file_paths: List[str],
         base_dir: str,
         record_counts: Dict[str, int],
+        is_demo: bool = False,
     ) -> DatasetManifest:
         """Create a cryptographic manifest for a set of dataset split files."""
         entries: List[FileManifestEntry] = []
@@ -113,6 +117,9 @@ class DatasetManifestGenerator:
             annotation_protocol_version="1.0",
             schema_version="1.0",
             created_at=datetime.now(timezone.utc).isoformat(),
+            data_classification="DEMO" if is_demo else "REAL",
+            is_demo=is_demo,
+            release_status="DEMO_ONLY_NOT_REAL_GROUND_TRUTH" if is_demo else "RELEASED",
             files=entries,
         )
 
@@ -143,6 +150,8 @@ class DatasetManifestGenerator:
             "taxonomy_version": manifest.taxonomy_version,
             "created_at": manifest.created_at,
             "total_records": metadata.total_records,
+            "data_classification": manifest.data_classification,
+            "release_status": manifest.release_status,
             "files": [f.model_dump() for f in manifest.files],
         }
         registry["datasets"].append(entry)

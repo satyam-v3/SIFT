@@ -44,6 +44,7 @@ def release_dataset(
     test_ratio: float = 0.15,
     random_seed: int = 42,
     is_demo: bool = False,
+    source_id: str | None = None,
 ):
     print("=" * 65)
     print(f" SIFT DATASET RELEASE PIPELINE: {dataset_id} (v{version})")
@@ -60,6 +61,12 @@ def release_dataset(
                 records.append(json.loads(line))
 
     print(f"\n[1/4] Loaded {len(records)} candidate ground-truth records.")
+
+    if is_demo:
+        print("[!] DEMO/SYNTHETIC MODE: packaging may be used for development only; real release is prohibited.")
+    elif not source_id:
+        print("[X] RELEASE REJECTED: --source-id is required for a real dataset release.")
+        return False
 
     # 1. Split records
     print("\n[2/4] Generating temporal, event-isolated splits (70/15/15)...")
@@ -83,6 +90,9 @@ def release_dataset(
         train_records=splits.train_records,
         val_records=splits.val_records,
         test_records=splits.test_records,
+        source_id=source_id,
+        locked_test_set=True,
+        is_demo_release=is_demo,
     )
 
     print("\n" + "-" * 65)
@@ -95,7 +105,7 @@ def release_dataset(
 
     if not report.is_release_approved:
         print(f"\n[X] RELEASE REJECTED: {report.critical_failures} critical gate(s) failed.")
-        sys.exit(1)
+        return False
 
     # 3. Package and Release
     print("\n[4/4] Release approved. Packaging cryptographic artifacts...")
@@ -147,6 +157,7 @@ def release_dataset(
         file_paths=[validated_file, train_file, val_file, test_file],
         base_dir=output_dir,
         record_counts=counts,
+        is_demo=is_demo,
     )
 
     with open(manifest_file, "w", encoding="utf-8") as f:
@@ -208,6 +219,7 @@ def release_dataset(
     print(f"    Splits:    {train_file}, {val_file}, {test_file}")
     print(f"    Manifest:  {manifest_file}")
     print("=" * 65)
+    return True
 
 
 def main():
@@ -218,6 +230,7 @@ def main():
     parser.add_argument("--output-dir", "-o", default="data", help="Output directory (default: data)")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for splitting")
     parser.add_argument("--demo", action="store_true", help="Flag if releasing synthetic demo data")
+    parser.add_argument("--source-id", help="Registered real source ID; required for real releases")
 
     args = parser.parse_args()
     release_dataset(
@@ -227,6 +240,7 @@ def main():
         output_dir=args.output_dir,
         random_seed=args.seed,
         is_demo=args.demo,
+        source_id=args.source_id,
     )
 
 

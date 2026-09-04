@@ -4,6 +4,8 @@
       "dataset_id": "sift_demo_dataset",
       "version": "0.1.0",
       "taxonomy_version": "1.0",
+      "data_classification": "DEMO",
+      "release_status": "DEMO_ONLY_NOT_REAL_GROUND_TRUTH",
       "created_at": "2026-08-30T16:03:12.613645+00:00",
       "total_records": 5,
       "files": [
@@ -41,6 +43,8 @@
       "dataset_id": "sift_sim_dataset",
       "version": "0.1.0",
       "taxonomy_version": "1.0",
+      "data_classification": "SYNTHETIC",
+      "release_status": "SYNTHETIC_ONLY_NOT_REAL_GROUND_TRUTH",
       "created_at": "2026-08-30T16:24:28.427875+00:00",
       "total_records": 2,
       "files": [

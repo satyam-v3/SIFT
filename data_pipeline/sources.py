@@ -10,7 +10,7 @@ import hashlib
 import json
 import os
 from typing import Any, Dict, List, Optional, Tuple
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class SourceType(str, Enum):
@@ -54,7 +54,25 @@ class RegisteredSource(BaseModel):
     raw_file_sha256: Optional[str] = None
     ingested_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     status: str = Field(default="ACTIVE", description="ACTIVE, ARCHIVED, DEPRECATED")
+    # References describe the approval and acquisition record; never store the
+    # approval document or other sensitive material in the registry itself.
+    authorization_reference: Optional[str] = None
+    acquisition_method: Optional[str] = None
+    source_version: Optional[str] = None
+    sensitivity_classification: Optional[str] = None
+    is_demo: bool = False
     notes: Optional[str] = None
+
+    @model_validator(mode="after")
+    def validate_classification(self) -> "RegisteredSource":
+        """Reject metadata combinations that could misrepresent demo data as real."""
+        if self.classification == DataClassification.REAL and self.is_demo:
+            raise ValueError("A REAL source cannot be marked as demo")
+        if self.classification in {DataClassification.SYNTHETIC, DataClassification.DEMO} and not self.is_demo:
+            raise ValueError("SYNTHETIC and DEMO sources must be marked is_demo=true")
+        if self.source_type == SourceType.SYNTHETIC_BENCHMARK and self.classification == DataClassification.REAL:
+            raise ValueError("A SYNTHETIC_BENCHMARK source cannot be classified as REAL")
+        return self
 
 
 class SourceProvenance(BaseModel):
@@ -111,14 +129,25 @@ class SourceRegistry:
         return list(self.sources.values())
 
     def validate_eligibility(self, source_id: str) -> Tuple[bool, Optional[str]]:
-        """Validate whether a source is legally and operationally eligible for training."""
+        """Authoritative predicate for REAL dataset release eligibility."""
         src = self.get_source(source_id)
         if not src:
             return False, f"Source ID '{source_id}' is not registered in source registry."
+        if src.classification != DataClassification.REAL or src.is_demo:
+            return False, (
+                f"Source '{source_id}' is not eligible for real release: "
+                f"classification={src.classification.value}, is_demo={src.is_demo}."
+            )
         if src.permission_status != PermissionStatus.AUTHORIZED:
             return False, f"Source '{source_id}' permission status is '{src.permission_status}' (must be AUTHORIZED)."
         if src.status != "ACTIVE":
             return False, f"Source '{source_id}' status is '{src.status}' (must be ACTIVE)."
+        if not src.authorization_reference:
+            return False, f"Source '{source_id}' lacks an authorization reference."
+        if not src.collection_date or not src.raw_file_sha256:
+            return False, f"Source '{source_id}' lacks required acquisition provenance (collection date or source hash)."
+        if src.record_count <= 0:
+            return False, f"Source '{source_id}' has no acquired records."
         return True, None
 
     @staticmethod
